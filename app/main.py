@@ -6,18 +6,17 @@ and exposes credit-insight APIs.
 """
 import logging
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from contextlib import asynccontextmanager
 
 from app.database import Base, engine
-from app.api import sync, customers, invoices, insights
+from app.api import sync, customers, invoices, insights, webhooks
 
 logging.basicConfig(level=logging.INFO)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup
     Base.metadata.create_all(bind=engine)
     yield
 
@@ -30,10 +29,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(sync.router)
-app.include_router(customers.router)
-app.include_router(invoices.router)
-app.include_router(insights.router)
+# ── All business routes live under /api/v1 ──
+v1 = APIRouter(prefix="/api/v1")
+v1.include_router(sync.router)
+v1.include_router(customers.router)
+v1.include_router(invoices.router)
+v1.include_router(insights.router)
+v1.include_router(webhooks.router)
+app.include_router(v1)
 
 
 @app.get("/health")
