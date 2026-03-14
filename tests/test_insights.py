@@ -45,25 +45,25 @@ class TestInsightsService:
 
 class TestInsightsAPI:
     def test_balances_endpoint(self, client, seed_data):
-        resp = client.get("/insights/balances")
+        resp = client.get("/api/v1/insights/balances")
         assert resp.status_code == 200
         data = resp.json()
         assert len(data) == 2
 
     def test_overdue_endpoint(self, client, seed_data):
-        resp = client.get("/insights/overdue")
+        resp = client.get("/api/v1/insights/overdue")
         assert resp.status_code == 200
 
     def test_aging_endpoint(self, client, seed_data):
-        resp = client.get("/insights/aging")
+        resp = client.get("/api/v1/insights/aging")
         assert resp.status_code == 200
         assert len(resp.json()) == 4
 
     def test_credit_report_endpoint(self, client, seed_data):
-        resp = client.get("/insights/credit-report/C1")
+        resp = client.get("/api/v1/insights/credit-report/C1")
         assert resp.status_code == 200
         assert resp.json()["customer"]["id"] == "C1"
 
     def test_credit_report_404(self, client, seed_data):
-        resp = client.get("/insights/credit-report/MISSING")
+        resp = client.get("/api/v1/insights/credit-report/MISSING")
         assert resp.status_code == 404
